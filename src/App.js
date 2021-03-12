@@ -39,7 +39,7 @@ const App = () => {
 
     const updateEmployees = (id, difference) => {
         const update = async () => {
-            const request = await fetch(API_URL + "update/" + id, {
+            const request = await fetch(API_URL + "employees/update/" + id, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -191,7 +191,10 @@ const App = () => {
             <footer>
                 <div className="container">
                     <p>
-                        API hosted on <a href="https://www.heroku.com/">heroku</a> with data from <a href="http://www.generatedata.com/">GenerateData</a>
+                        API hosted on{" "}
+                        <a href="https://www.heroku.com/">heroku</a> with data
+                        from{" "}
+                        <a href="http://www.generatedata.com/">GenerateData</a>
                     </p>
                 </div>
             </footer>
