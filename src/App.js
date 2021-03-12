@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-
-const API_URL = "http://dummy.restapiexample.com/api/v1/";
+import { fakeFetch } from "./fake_api";
 
 const App = () => {
     const [isSearching, setIsSearching] = useState(false);
@@ -13,11 +12,9 @@ const App = () => {
 
     useEffect(() => {
         const fetchEmployees = async () => {
-            const response = await fetch(API_URL + "employees");
-            const result = await response.json();
-
-            setEmployees(result.data);
-            setFilteredEmployees(result.data);
+            const response = await fakeFetch();
+            setEmployees(response);
+            setFilteredEmployees(response);
         };
 
         fetchEmployees();
@@ -28,7 +25,7 @@ const App = () => {
         setFilteredEmployees(
             e.target.value.length
                 ? employees.filter((m) =>
-                      m.employee_name
+                      m.name
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase())
                   )
@@ -37,43 +34,22 @@ const App = () => {
         setError("");
     };
 
-    const updateSalary = async (id, difference) => {
-        const employee = employees.find((m) => m.id === id);
-        if (employee) {
-            const salary = parseInt(employee.employee_salary, 10) + difference;
-            const response = await fetch(
-                `${API_URL}update/${id}?employee_salary=${salary}`,
-                { method: "PUT" }
-            );
-            const result = await response.json();
-
-            if (result.status === "success") {
-                return result.data.employee_salary;
-            }
-        }
-        return null;
+    const updateEmployees = (id, difference) => {
+        const newEmployees = employees.map((m) =>
+            m.id === id ? { ...m, salary: m.salary + difference } : m
+        );
+        setEmployees(newEmployees);
+        setFilteredEmployees(newEmployees);
     };
 
-    const updateEmployees = async (id, difference) => {
-        const salary = await updateSalary(id, difference);
-        if (salary) {
-            const newEmployees = employees.map((m) => ({
-                ...m,
-                employee_salary: m.id === id ? salary : m.employee_salary,
-            }));
-            setEmployees(newEmployees);
-            setFilteredEmployees(newEmployees);
-        }
-    };
-
-    const handleDecrease = async (e) => {
+    const handleDecrease = (e) => {
         e.preventDefault();
-        updateEmployees(e.target.dataset.id, -20);
+        updateEmployees(parseInt(e.target.dataset.id, 10), -20);
     };
 
     const handleIncrease = (e) => {
         e.preventDefault();
-        updateEmployees(e.target.dataset.id, 20);
+        updateEmployees(parseInt(e.target.dataset.id, 10), 20);
     };
 
     const verifyPassword = (e) => {
@@ -167,16 +143,11 @@ const App = () => {
                         </thead>
                         <tbody>
                             {filteredEmployees.map(
-                                ({
-                                    id,
-                                    employee_name,
-                                    employee_age,
-                                    employee_salary,
-                                }) => (
+                                ({ id, name, age, salary }) => (
                                     <tr key={id}>
                                         <th>{id}</th>
-                                        <td>{employee_name}</td>
-                                        <td>{employee_age}</td>
+                                        <td>{name}</td>
+                                        <td>{age}</td>
                                         <td>
                                             <button
                                                 data-id={id}
@@ -184,7 +155,7 @@ const App = () => {
                                             >
                                                 -
                                             </button>
-                                            <span>{employee_salary}</span>
+                                            <span>{salary}</span>
                                             <button
                                                 data-id={id}
                                                 onClick={handleIncrease}
