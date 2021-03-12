@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { fakeFetch } from "./fake_api";
+
+const API_URL = "https://codecoolfrontendapi.herokuapp.com/";
+// const API_URL = "http://127.0.0.1:5000/";
 
 const App = () => {
     const [isSearching, setIsSearching] = useState(false);
@@ -12,7 +14,8 @@ const App = () => {
 
     useEffect(() => {
         const fetchEmployees = async () => {
-            const response = await fakeFetch();
+            const request = await fetch(API_URL + "employees");
+            const response = await request.json();
             setEmployees(response);
             setFilteredEmployees(response);
         };
@@ -35,11 +38,25 @@ const App = () => {
     };
 
     const updateEmployees = (id, difference) => {
-        const newEmployees = employees.map((m) =>
-            m.id === id ? { ...m, salary: m.salary + difference } : m
-        );
-        setEmployees(newEmployees);
-        setFilteredEmployees(newEmployees);
+        const update = async () => {
+            const request = await fetch(API_URL + "update/" + id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    salary:
+                        employees.find((m) => m.id === parseInt(id)).salary +
+                        difference,
+                }),
+            });
+            const response = await request.json();
+
+            if (response) {
+                setEmployees(response);
+                setFilteredEmployees(response);
+            }
+        };
+
+        update();
     };
 
     const handleDecrease = (e) => {
