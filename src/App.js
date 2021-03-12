@@ -191,10 +191,7 @@ const App = () => {
             <footer>
                 <div className="container">
                     <p>
-                        API provided by{" "}
-                        <a href="http://www.dummy.restapiexample.com/">
-                            Dummy sample REST API
-                        </a>
+                        API hosted on <a href="https://www.heroku.com/">heroku</a> with data from <a href="http://www.generatedata.com/">GenerateData</a>
                     </p>
                 </div>
             </footer>
